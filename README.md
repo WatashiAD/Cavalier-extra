@@ -39,13 +39,9 @@ Original project: [NickvisionApps/Cavalier](https://github.com/NickvisionApps/Ca
 
 ## Screenshots
 
-<details>
- <summary>GNOME</summary>
-
- ![GNOMEDefault](NickvisionCavalier.GNOME/Screenshots/Default.png)
- ![GNOMEBars](NickvisionCavalier.GNOME/Screenshots/Bars.png)
- ![GNOMESpine](NickvisionCavalier.GNOME/Screenshots/Spine.png)
- ![GNOMELevels](NickvisionCavalier.GNOME/Screenshots/Levels.png)
- ![GNOMEImages](NickvisionCavalier.GNOME/Screenshots/Images.png)
- ![GNOMECircle](NickvisionCavalier.GNOME/Screenshots/Circle.png)
-</details>
+ ![HyprlandDefault](NickvisionCavalier.GNOME/Screenshots/Default.png)
+ ![HyprlandBars](NickvisionCavalier.GNOME/Screenshots/Bars.png)
+ ![HyprlandSpine](NickvisionCavalier.GNOME/Screenshots/Spine.png)
+ ![HyprlandLevels](NickvisionCavalier.GNOME/Screenshots/Levels.png)
+ ![HyprlandImages](NickvisionCavalier.GNOME/Screenshots/Images.png)
+ ![HyprlandCircle](NickvisionCavalier.GNOME/Screenshots/Circle.png)
