@@ -39,9 +39,6 @@ Original project: [NickvisionApps/Cavalier](https://github.com/NickvisionApps/Ca
 
 ## Screenshots
 
- ![HyprlandDefault](NickvisionCavalier.GNOME/Screenshots/Default.png)
- ![HyprlandBars](NickvisionCavalier.GNOME/Screenshots/Bars.png)
- ![HyprlandSpine](NickvisionCavalier.GNOME/Screenshots/Spine.png)
- ![HyprlandLevels](NickvisionCavalier.GNOME/Screenshots/Levels.png)
- ![HyprlandImages](NickvisionCavalier.GNOME/Screenshots/Images.png)
- ![HyprlandCircle](NickvisionCavalier.GNOME/Screenshots/Circle.png)
+Hyprland
+
+All Screenshots are from Hyprland.
