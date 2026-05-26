@@ -57,6 +57,18 @@ public class PreferencesDialog : Adw.PreferencesWindow
     [Gtk.Connect] private readonly Adw.SwitchRow _monstercatRow;
     [Gtk.Connect] private readonly Gtk.Scale _noiseReductionScale;
     [Gtk.Connect] private readonly Adw.SwitchRow _reverseRow;
+    [Gtk.Connect] private readonly Adw.ComboRow _inputMethodRow;
+    [Gtk.Connect] private readonly Adw.EntryRow _inputSourceRow;
+    [Gtk.Connect] private readonly Adw.SwitchRow _wavesRow;
+    [Gtk.Connect] private readonly Gtk.Scale _gravityScale;
+    [Gtk.Connect] private readonly Gtk.Scale _eqBand1Scale;
+    [Gtk.Connect] private readonly Gtk.Scale _eqBand2Scale;
+    [Gtk.Connect] private readonly Gtk.Scale _eqBand3Scale;
+    [Gtk.Connect] private readonly Gtk.Scale _eqBand4Scale;
+    [Gtk.Connect] private readonly Gtk.Scale _eqBand5Scale;
+    [Gtk.Connect] private readonly Gtk.Scale _eqBand6Scale;
+    [Gtk.Connect] private readonly Gtk.Scale _eqBand7Scale;
+    [Gtk.Connect] private readonly Gtk.Scale _eqBand8Scale;
     [Gtk.Connect] private readonly Gtk.ListBox _profilesList;
     [Gtk.Connect] private readonly Gtk.Button _addProfileButton;
     [Gtk.Connect] private readonly Gtk.ToggleButton _lightThemeButton;
@@ -848,6 +860,124 @@ public class PreferencesDialog : Adw.PreferencesWindow
                 _controller.ReverseOrder = _reverseRow.GetActive();
             }
         };
+        _inputMethodRow.OnNotify += (sender, e) =>
+        {
+            if (e.Pspec.GetName() == "selected")
+            {
+                _controller.InputMethod = _inputMethodRow.GetSelected() switch
+                {
+                    0u => "pulse",
+                    1u => "pipewire",
+                    2u => "alsa",
+                    3u => "fifo",
+                    4u => "sndio",
+                    5u => "portaudio",
+                    _ => "pulse"
+                };
+                if (!_avoidCAVAReload)
+                {
+                    _controller.ChangeCAVASettings();
+                }
+            }
+        };
+        _inputSourceRow.OnNotify += (sender, e) =>
+        {
+            if (e.Pspec.GetName() == "text")
+            {
+                _inputSourceRow.RemoveCssClass("error");
+            }
+        };
+        _inputSourceRow.OnApply += (sender, e) =>
+        {
+            _controller.InputSource = _inputSourceRow.GetText();
+            if (!_avoidCAVAReload)
+            {
+                _controller.ChangeCAVASettings();
+            }
+        };
+        _wavesRow.OnNotify += (sender, e) =>
+        {
+            if (e.Pspec.GetName() == "active")
+            {
+                _controller.Waves = _wavesRow.GetActive();
+                if (!_avoidCAVAReload)
+                {
+                    _controller.ChangeCAVASettings();
+                }
+            }
+        };
+        _gravityScale.OnValueChanged += (sender, e) =>
+        {
+            _controller.Gravity = (uint)_gravityScale.GetValue();
+            if (!_avoidCAVAReload)
+            {
+                _controller.ChangeCAVASettings();
+            }
+        };
+        _eqBand1Scale.OnValueChanged += (sender, e) =>
+        {
+            _controller.EqBand1 = (float)_eqBand1Scale.GetValue();
+            if (!_avoidCAVAReload)
+            {
+                _controller.ChangeCAVASettings();
+            }
+        };
+        _eqBand2Scale.OnValueChanged += (sender, e) =>
+        {
+            _controller.EqBand2 = (float)_eqBand2Scale.GetValue();
+            if (!_avoidCAVAReload)
+            {
+                _controller.ChangeCAVASettings();
+            }
+        };
+        _eqBand3Scale.OnValueChanged += (sender, e) =>
+        {
+            _controller.EqBand3 = (float)_eqBand3Scale.GetValue();
+            if (!_avoidCAVAReload)
+            {
+                _controller.ChangeCAVASettings();
+            }
+        };
+        _eqBand4Scale.OnValueChanged += (sender, e) =>
+        {
+            _controller.EqBand4 = (float)_eqBand4Scale.GetValue();
+            if (!_avoidCAVAReload)
+            {
+                _controller.ChangeCAVASettings();
+            }
+        };
+        _eqBand5Scale.OnValueChanged += (sender, e) =>
+        {
+            _controller.EqBand5 = (float)_eqBand5Scale.GetValue();
+            if (!_avoidCAVAReload)
+            {
+                _controller.ChangeCAVASettings();
+            }
+        };
+        _eqBand6Scale.OnValueChanged += (sender, e) =>
+        {
+            _controller.EqBand6 = (float)_eqBand6Scale.GetValue();
+            if (!_avoidCAVAReload)
+            {
+                _controller.ChangeCAVASettings();
+            }
+        };
+        _eqBand7Scale.OnValueChanged += (sender, e) =>
+        {
+            _controller.EqBand7 = (float)_eqBand7Scale.GetValue();
+            if (!_avoidCAVAReload)
+            {
+                _controller.ChangeCAVASettings();
+            }
+        };
+        _eqBand8Scale.OnValueChanged += (sender, e) =>
+        {
+            _controller.EqBand8 = (float)_eqBand8Scale.GetValue();
+            if (!_avoidCAVAReload)
+            {
+                _controller.ChangeCAVASettings();
+            }
+        };
         _profilesList.OnRowSelected += (sender, e) =>
         {
             if (e.Row != null)
@@ -1018,6 +1148,27 @@ public class PreferencesDialog : Adw.PreferencesWindow
         _stereoButton.SetActive(_controller.Stereo);
         _monstercatRow.SetActive(_controller.Monstercat);
         _noiseReductionScale.SetValue((double)_controller.NoiseReduction * 100);
+        _inputMethodRow.SetSelected(_controller.InputMethod switch
+        {
+            "pulse" => 0u,
+            "pipewire" => 1u,
+            "alsa" => 2u,
+            "fifo" => 3u,
+            "sndio" => 4u,
+            "portaudio" => 5u,
+            _ => 0u
+        });
+        _inputSourceRow.SetText(_controller.InputSource);
+        _wavesRow.SetActive(_controller.Waves);
+        _gravityScale.SetValue((int)_controller.Gravity);
+        _eqBand1Scale.SetValue((double)_controller.EqBand1);
+        _eqBand2Scale.SetValue((double)_controller.EqBand2);
+        _eqBand3Scale.SetValue((double)_controller.EqBand3);
+        _eqBand4Scale.SetValue((double)_controller.EqBand4);
+        _eqBand5Scale.SetValue((double)_controller.EqBand5);
+        _eqBand6Scale.SetValue((double)_controller.EqBand6);
+        _eqBand7Scale.SetValue((double)_controller.EqBand7);
+        _eqBand8Scale.SetValue((double)_controller.EqBand8);
         _avoidCAVAReload = false;
         _controller.ChangeCAVASettings();
         return false;

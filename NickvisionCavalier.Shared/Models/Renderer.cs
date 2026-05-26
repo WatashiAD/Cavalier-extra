@@ -19,6 +19,7 @@ public class Renderer
     }
 
     private delegate SKPath? DrawFunc(float[] sample, DrawingDirection direction, float x, float y, float width, float height, float rotation, SKPaint paint);
+    private bool _skipDrawing;
     private float _oldWidth;
     private float _oldHeight;
     private int _bgImageIndex;
@@ -201,71 +202,185 @@ public class Renderer
         };
         if (Configuration.Current.Mirror == Mirror.Full)
         {
-            using var path1 = drawFunc(sample, Configuration.Current.Direction,
-                (width + Configuration.Current.AreaMargin * 2) * Configuration.Current.AreaOffsetX + Configuration.Current.AreaMargin,
-                (height + Configuration.Current.AreaMargin * 2) * Configuration.Current.AreaOffsetY + Configuration.Current.AreaMargin,
-                GetMirrorWidth(width), GetMirrorHeight(height),
-                Configuration.Current.Rotation, fgPaint);
-            using var path2 = drawFunc(Configuration.Current.ReverseMirror ? sample.Reverse().ToArray() : sample, GetMirrorDirection(),
-                (width + Configuration.Current.AreaMargin * 2) * Configuration.Current.AreaOffsetX + GetMirrorX(width),
-                (height + Configuration.Current.AreaMargin * 2) * Configuration.Current.AreaOffsetY + GetMirrorY(height),
-                GetMirrorWidth(width), GetMirrorHeight(height),
-                -Configuration.Current.Rotation, fgPaint);
-            if (path1 != null && path2 != null && _fgImageIndex != -1)
+            if (_fgImageIndex != -1)
             {
-                using var path = new SKPath();
-                path.AddPath(path1);
-                path.AddPath(path2);
-                Canvas.Save();
-                Canvas.ClipPath(path);
-                using var paint = new SKPaint();
-                paint.Color = paint.Color.WithAlpha((byte)(255 * Configuration.Current.FgImageAlpha));
-                Canvas.DrawBitmap(_fgTargetBitmap,
-                    (width + Configuration.Current.AreaMargin * 2) / 2f - _fgTargetBitmap!.Width / 2f,
-                    (height + Configuration.Current.AreaMargin * 2) / 2f - _fgTargetBitmap.Height / 2f, paint);
-                Canvas.Restore();
+                _skipDrawing = true;
+                using var path1 = drawFunc(sample, Configuration.Current.Direction,
+                    (width + Configuration.Current.AreaMargin * 2) * Configuration.Current.AreaOffsetX + Configuration.Current.AreaMargin,
+                    (height + Configuration.Current.AreaMargin * 2) * Configuration.Current.AreaOffsetY + Configuration.Current.AreaMargin,
+                    GetMirrorWidth(width), GetMirrorHeight(height),
+                    Configuration.Current.Rotation, fgPaint);
+                using var path2 = drawFunc(Configuration.Current.ReverseMirror ? sample.Reverse().ToArray() : sample, GetMirrorDirection(),
+                    (width + Configuration.Current.AreaMargin * 2) * Configuration.Current.AreaOffsetX + GetMirrorX(width),
+                    (height + Configuration.Current.AreaMargin * 2) * Configuration.Current.AreaOffsetY + GetMirrorY(height),
+                    GetMirrorWidth(width), GetMirrorHeight(height),
+                    -Configuration.Current.Rotation, fgPaint);
+                _skipDrawing = false;
+                if (path1 != null && path2 != null)
+                {
+                    using var path = new SKPath();
+                    path.AddPath(path1);
+                    path.AddPath(path2);
+                    Canvas.SaveLayer();
+                    Canvas.Save();
+                    Canvas.ClipPath(path);
+                    using var paint = new SKPaint();
+                    paint.Color = paint.Color.WithAlpha((byte)(255 * Configuration.Current.FgImageAlpha));
+                    Canvas.DrawBitmap(_fgTargetBitmap,
+                        (width + Configuration.Current.AreaMargin * 2) / 2f - _fgTargetBitmap!.Width / 2f,
+                        (height + Configuration.Current.AreaMargin * 2) / 2f - _fgTargetBitmap.Height / 2f, paint);
+                    Canvas.Restore();
+                    drawFunc(sample, Configuration.Current.Direction,
+                        (width + Configuration.Current.AreaMargin * 2) * Configuration.Current.AreaOffsetX + Configuration.Current.AreaMargin,
+                        (height + Configuration.Current.AreaMargin * 2) * Configuration.Current.AreaOffsetY + Configuration.Current.AreaMargin,
+                        GetMirrorWidth(width), GetMirrorHeight(height),
+                        Configuration.Current.Rotation, fgPaint);
+                    drawFunc(Configuration.Current.ReverseMirror ? sample.Reverse().ToArray() : sample, GetMirrorDirection(),
+                        (width + Configuration.Current.AreaMargin * 2) * Configuration.Current.AreaOffsetX + GetMirrorX(width),
+                        (height + Configuration.Current.AreaMargin * 2) * Configuration.Current.AreaOffsetY + GetMirrorY(height),
+                        GetMirrorWidth(width), GetMirrorHeight(height),
+                        -Configuration.Current.Rotation, fgPaint);
+                    Canvas.Restore();
+                }
+                else
+                {
+                    drawFunc(sample, Configuration.Current.Direction,
+                        (width + Configuration.Current.AreaMargin * 2) * Configuration.Current.AreaOffsetX + Configuration.Current.AreaMargin,
+                        (height + Configuration.Current.AreaMargin * 2) * Configuration.Current.AreaOffsetY + Configuration.Current.AreaMargin,
+                        GetMirrorWidth(width), GetMirrorHeight(height),
+                        Configuration.Current.Rotation, fgPaint);
+                    drawFunc(Configuration.Current.ReverseMirror ? sample.Reverse().ToArray() : sample, GetMirrorDirection(),
+                        (width + Configuration.Current.AreaMargin * 2) * Configuration.Current.AreaOffsetX + GetMirrorX(width),
+                        (height + Configuration.Current.AreaMargin * 2) * Configuration.Current.AreaOffsetY + GetMirrorY(height),
+                        GetMirrorWidth(width), GetMirrorHeight(height),
+                        -Configuration.Current.Rotation, fgPaint);
+                }
+            }
+            else
+            {
+                using var path1 = drawFunc(sample, Configuration.Current.Direction,
+                    (width + Configuration.Current.AreaMargin * 2) * Configuration.Current.AreaOffsetX + Configuration.Current.AreaMargin,
+                    (height + Configuration.Current.AreaMargin * 2) * Configuration.Current.AreaOffsetY + Configuration.Current.AreaMargin,
+                    GetMirrorWidth(width), GetMirrorHeight(height),
+                    Configuration.Current.Rotation, fgPaint);
+                using var path2 = drawFunc(Configuration.Current.ReverseMirror ? sample.Reverse().ToArray() : sample, GetMirrorDirection(),
+                    (width + Configuration.Current.AreaMargin * 2) * Configuration.Current.AreaOffsetX + GetMirrorX(width),
+                    (height + Configuration.Current.AreaMargin * 2) * Configuration.Current.AreaOffsetY + GetMirrorY(height),
+                    GetMirrorWidth(width), GetMirrorHeight(height),
+                    -Configuration.Current.Rotation, fgPaint);
             }
         }
         else if (Configuration.Current.Mirror == Mirror.SplitChannels)
         {
-            using var path1 = drawFunc(sample.Take(sample.Length / 2).ToArray(), Configuration.Current.Direction,
-                (width + Configuration.Current.AreaMargin * 2) * Configuration.Current.AreaOffsetX + Configuration.Current.AreaMargin,
-                (height + Configuration.Current.AreaMargin * 2) * Configuration.Current.AreaOffsetY + Configuration.Current.AreaMargin,
-                GetMirrorWidth(width), GetMirrorHeight(height),
-                Configuration.Current.Rotation, fgPaint);
-            using var path2 = drawFunc(Configuration.Current.ReverseMirror ? sample.Skip(sample.Length / 2).ToArray() : sample.Skip(sample.Length / 2).Reverse().ToArray(), GetMirrorDirection(),
-                (width + Configuration.Current.AreaMargin * 2) * Configuration.Current.AreaOffsetX + GetMirrorX(width),
-                (height + Configuration.Current.AreaMargin * 2) * Configuration.Current.AreaOffsetY + GetMirrorY(height),
-                GetMirrorWidth(width), GetMirrorHeight(height),
-                -Configuration.Current.Rotation, fgPaint);
-            if (path1 != null && path2 != null && _fgImageIndex != -1)
+            if (_fgImageIndex != -1)
             {
-                using var path = new SKPath();
-                path.AddPath(path1);
-                path.AddPath(path2);
-                Canvas.Save();
-                Canvas.ClipPath(path);
-                using var paint = new SKPaint();
-                paint.Color = paint.Color.WithAlpha((byte)(255 * Configuration.Current.FgImageAlpha));
-                Canvas.DrawBitmap(_fgTargetBitmap, width / 2 - _fgTargetBitmap!.Width / 2f, height / 2 - _fgTargetBitmap.Height / 2f, paint);
-                Canvas.Restore();
+                _skipDrawing = true;
+                using var path1 = drawFunc(sample.Take(sample.Length / 2).ToArray(), Configuration.Current.Direction,
+                    (width + Configuration.Current.AreaMargin * 2) * Configuration.Current.AreaOffsetX + Configuration.Current.AreaMargin,
+                    (height + Configuration.Current.AreaMargin * 2) * Configuration.Current.AreaOffsetY + Configuration.Current.AreaMargin,
+                    GetMirrorWidth(width), GetMirrorHeight(height),
+                    Configuration.Current.Rotation, fgPaint);
+                using var path2 = drawFunc(Configuration.Current.ReverseMirror ? sample.Skip(sample.Length / 2).ToArray() : sample.Skip(sample.Length / 2).Reverse().ToArray(), GetMirrorDirection(),
+                    (width + Configuration.Current.AreaMargin * 2) * Configuration.Current.AreaOffsetX + GetMirrorX(width),
+                    (height + Configuration.Current.AreaMargin * 2) * Configuration.Current.AreaOffsetY + GetMirrorY(height),
+                    GetMirrorWidth(width), GetMirrorHeight(height),
+                    -Configuration.Current.Rotation, fgPaint);
+                _skipDrawing = false;
+                if (path1 != null && path2 != null)
+                {
+                    using var path = new SKPath();
+                    path.AddPath(path1);
+                    path.AddPath(path2);
+                    Canvas.SaveLayer();
+                    Canvas.Save();
+                    Canvas.ClipPath(path);
+                    using var paint = new SKPaint();
+                    paint.Color = paint.Color.WithAlpha((byte)(255 * Configuration.Current.FgImageAlpha));
+                    Canvas.DrawBitmap(_fgTargetBitmap, width / 2 - _fgTargetBitmap!.Width / 2f, height / 2 - _fgTargetBitmap.Height / 2f, paint);
+                    Canvas.Restore();
+                    drawFunc(sample.Take(sample.Length / 2).ToArray(), Configuration.Current.Direction,
+                        (width + Configuration.Current.AreaMargin * 2) * Configuration.Current.AreaOffsetX + Configuration.Current.AreaMargin,
+                        (height + Configuration.Current.AreaMargin * 2) * Configuration.Current.AreaOffsetY + Configuration.Current.AreaMargin,
+                        GetMirrorWidth(width), GetMirrorHeight(height),
+                        Configuration.Current.Rotation, fgPaint);
+                    drawFunc(Configuration.Current.ReverseMirror ? sample.Skip(sample.Length / 2).ToArray() : sample.Skip(sample.Length / 2).Reverse().ToArray(), GetMirrorDirection(),
+                        (width + Configuration.Current.AreaMargin * 2) * Configuration.Current.AreaOffsetX + GetMirrorX(width),
+                        (height + Configuration.Current.AreaMargin * 2) * Configuration.Current.AreaOffsetY + GetMirrorY(height),
+                        GetMirrorWidth(width), GetMirrorHeight(height),
+                        -Configuration.Current.Rotation, fgPaint);
+                    Canvas.Restore();
+                }
+                else
+                {
+                    drawFunc(sample.Take(sample.Length / 2).ToArray(), Configuration.Current.Direction,
+                        (width + Configuration.Current.AreaMargin * 2) * Configuration.Current.AreaOffsetX + Configuration.Current.AreaMargin,
+                        (height + Configuration.Current.AreaMargin * 2) * Configuration.Current.AreaOffsetY + Configuration.Current.AreaMargin,
+                        GetMirrorWidth(width), GetMirrorHeight(height),
+                        Configuration.Current.Rotation, fgPaint);
+                    drawFunc(Configuration.Current.ReverseMirror ? sample.Skip(sample.Length / 2).ToArray() : sample.Skip(sample.Length / 2).Reverse().ToArray(), GetMirrorDirection(),
+                        (width + Configuration.Current.AreaMargin * 2) * Configuration.Current.AreaOffsetX + GetMirrorX(width),
+                        (height + Configuration.Current.AreaMargin * 2) * Configuration.Current.AreaOffsetY + GetMirrorY(height),
+                        GetMirrorWidth(width), GetMirrorHeight(height),
+                        -Configuration.Current.Rotation, fgPaint);
+                }
+            }
+            else
+            {
+                using var path1 = drawFunc(sample.Take(sample.Length / 2).ToArray(), Configuration.Current.Direction,
+                    (width + Configuration.Current.AreaMargin * 2) * Configuration.Current.AreaOffsetX + Configuration.Current.AreaMargin,
+                    (height + Configuration.Current.AreaMargin * 2) * Configuration.Current.AreaOffsetY + Configuration.Current.AreaMargin,
+                    GetMirrorWidth(width), GetMirrorHeight(height),
+                    Configuration.Current.Rotation, fgPaint);
+                using var path2 = drawFunc(Configuration.Current.ReverseMirror ? sample.Skip(sample.Length / 2).ToArray() : sample.Skip(sample.Length / 2).Reverse().ToArray(), GetMirrorDirection(),
+                    (width + Configuration.Current.AreaMargin * 2) * Configuration.Current.AreaOffsetX + GetMirrorX(width),
+                    (height + Configuration.Current.AreaMargin * 2) * Configuration.Current.AreaOffsetY + GetMirrorY(height),
+                    GetMirrorWidth(width), GetMirrorHeight(height),
+                    -Configuration.Current.Rotation, fgPaint);
             }
         }
         else
         {
-            using var path = drawFunc(sample, Configuration.Current.Direction,
-                (width + Configuration.Current.AreaMargin * 2) * Configuration.Current.AreaOffsetX + Configuration.Current.AreaMargin,
-                (height + Configuration.Current.AreaMargin * 2) * Configuration.Current.AreaOffsetY + Configuration.Current.AreaMargin,
-                width, height,
-                Configuration.Current.Rotation, fgPaint);
-            if (path != null && _fgImageIndex != -1)
+            if (_fgImageIndex != -1)
             {
-                Canvas.Save();
-                Canvas.ClipPath(path);
-                using var paint = new SKPaint();
-                paint.Color = paint.Color.WithAlpha((byte)(255 * Configuration.Current.FgImageAlpha));
-                Canvas.DrawBitmap(_fgTargetBitmap, width / 2 - _fgTargetBitmap!.Width / 2f, height / 2 - _fgTargetBitmap.Height / 2f, paint);
-                Canvas.Restore();
+                _skipDrawing = true;
+                using var path = drawFunc(sample, Configuration.Current.Direction,
+                    (width + Configuration.Current.AreaMargin * 2) * Configuration.Current.AreaOffsetX + Configuration.Current.AreaMargin,
+                    (height + Configuration.Current.AreaMargin * 2) * Configuration.Current.AreaOffsetY + Configuration.Current.AreaMargin,
+                    width, height,
+                    Configuration.Current.Rotation, fgPaint);
+                _skipDrawing = false;
+                if (path != null)
+                {
+                    Canvas.SaveLayer();
+                    Canvas.Save();
+                    Canvas.ClipPath(path);
+                    using var paint = new SKPaint();
+                    paint.Color = paint.Color.WithAlpha((byte)(255 * Configuration.Current.FgImageAlpha));
+                    Canvas.DrawBitmap(_fgTargetBitmap, width / 2 - _fgTargetBitmap!.Width / 2f, height / 2 - _fgTargetBitmap.Height / 2f, paint);
+                    Canvas.Restore();
+                    drawFunc(sample, Configuration.Current.Direction,
+                        (width + Configuration.Current.AreaMargin * 2) * Configuration.Current.AreaOffsetX + Configuration.Current.AreaMargin,
+                        (height + Configuration.Current.AreaMargin * 2) * Configuration.Current.AreaOffsetY + Configuration.Current.AreaMargin,
+                        width, height,
+                        Configuration.Current.Rotation, fgPaint);
+                    Canvas.Restore();
+                }
+                else
+                {
+                    drawFunc(sample, Configuration.Current.Direction,
+                        (width + Configuration.Current.AreaMargin * 2) * Configuration.Current.AreaOffsetX + Configuration.Current.AreaMargin,
+                        (height + Configuration.Current.AreaMargin * 2) * Configuration.Current.AreaOffsetY + Configuration.Current.AreaMargin,
+                        width, height,
+                        Configuration.Current.Rotation, fgPaint);
+                }
+            }
+            else
+            {
+                using var path = drawFunc(sample, Configuration.Current.Direction,
+                    (width + Configuration.Current.AreaMargin * 2) * Configuration.Current.AreaOffsetX + Configuration.Current.AreaMargin,
+                    (height + Configuration.Current.AreaMargin * 2) * Configuration.Current.AreaOffsetY + Configuration.Current.AreaMargin,
+                    width, height,
+                    Configuration.Current.Rotation, fgPaint);
             }
         }
         Canvas.Flush();
@@ -509,7 +624,10 @@ public class Renderer
                 }
                 break;
         }
-        Canvas.DrawPath(path, paint);
+        if (!_skipDrawing)
+        {
+            Canvas.DrawPath(path, paint);
+        }
         if (!Configuration.Current.Filling)
         {
             switch (direction)
@@ -606,7 +724,10 @@ public class Renderer
                 }
             }
         }
-        Canvas.DrawPath(path, paint);
+        if (!_skipDrawing)
+        {
+            Canvas.DrawPath(path, paint);
+        }
         return path;
     }
 
@@ -674,7 +795,10 @@ public class Renderer
                     break;
             }
         }
-        Canvas.DrawPath(path, paint);
+        if (!_skipDrawing)
+        {
+            Canvas.DrawPath(path, paint);
+        }
         return path;
     }
 
@@ -732,7 +856,10 @@ public class Renderer
                     break;
             };
         }
-        Canvas.DrawPath(path, paint);
+        if (!_skipDrawing)
+        {
+            Canvas.DrawPath(path, paint);
+        }
         return path;
     }
 
@@ -765,21 +892,27 @@ public class Renderer
                 case DrawingDirection.BottomTop:
                     if (Configuration.Current.Hearts)
                     {
-                        Canvas.Save();
-                        using var path = new SKPath();
-                        CreateHeart(path, itemSize);
-                        Canvas.Translate(x + step * i + step / 2, y + height / 2);
-                        Canvas.Scale(sample[i]);
-                        Canvas.DrawPath(path, GetSpinePaint(paint, sample[i]));
-                        Canvas.Restore();
+                        if (!_skipDrawing)
+                        {
+                            Canvas.Save();
+                            using var path = new SKPath();
+                            CreateHeart(path, itemSize);
+                            Canvas.Translate(x + step * i + step / 2, y + height / 2);
+                            Canvas.Scale(sample[i]);
+                            Canvas.DrawPath(path, GetSpinePaint(paint, sample[i]));
+                            Canvas.Restore();
+                        }
                         break;
                     }
-                    Canvas.DrawRoundRect(
-                        x + step * (i + 0.5f) + (1 - itemSize * sample[i]) / 2,
-                        y + height / 2 - itemSize * sample[i] / 2,
-                        itemSize * sample[i], itemSize * sample[i],
-                        itemSize * sample[i] / 2 * Configuration.Current.ItemsRoundness, itemSize * sample[i] / 2 * Configuration.Current.ItemsRoundness,
-                        GetSpinePaint(paint, sample[i]));
+                    if (!_skipDrawing)
+                    {
+                        Canvas.DrawRoundRect(
+                            x + step * (i + 0.5f) + (1 - itemSize * sample[i]) / 2,
+                            y + height / 2 - itemSize * sample[i] / 2,
+                            itemSize * sample[i], itemSize * sample[i],
+                            itemSize * sample[i] / 2 * Configuration.Current.ItemsRoundness, itemSize * sample[i] / 2 * Configuration.Current.ItemsRoundness,
+                            GetSpinePaint(paint, sample[i]));
+                    }
                     totalPath.AddRect(new SKRect(
                         x + step * (i + 0.5f) + (1 - itemSize * sample[i]) / 2,
                         y + height / 2 - itemSize * sample[i] / 2,
@@ -790,21 +923,27 @@ public class Renderer
                 case DrawingDirection.RightLeft:
                     if (Configuration.Current.Hearts)
                     {
-                        Canvas.Save();
-                        using var path = new SKPath();
-                        CreateHeart(path, itemSize);
-                        Canvas.Translate(x + width / 2, y + step * i + step / 2);
-                        Canvas.Scale(sample[i]);
-                        Canvas.DrawPath(path, GetSpinePaint(paint, sample[i]));
-                        Canvas.Restore();
+                        if (!_skipDrawing)
+                        {
+                            Canvas.Save();
+                            using var path = new SKPath();
+                            CreateHeart(path, itemSize);
+                            Canvas.Translate(x + width / 2, y + step * i + step / 2);
+                            Canvas.Scale(sample[i]);
+                            Canvas.DrawPath(path, GetSpinePaint(paint, sample[i]));
+                            Canvas.Restore();
+                        }
                         break;
                     }
-                    Canvas.DrawRoundRect(
-                        x + width / 2 - itemSize * sample[i] / 2,
-                        y + step * (i + 0.5f) + (1 - itemSize * sample[i]) / 2,
-                        itemSize * sample[i], itemSize * sample[i],
-                        itemSize * sample[i] / 2 * Configuration.Current.ItemsRoundness, itemSize * sample[i] / 2 * Configuration.Current.ItemsRoundness,
-                        GetSpinePaint(paint, sample[i]));
+                    if (!_skipDrawing)
+                    {
+                        Canvas.DrawRoundRect(
+                            x + width / 2 - itemSize * sample[i] / 2,
+                            y + step * (i + 0.5f) + (1 - itemSize * sample[i]) / 2,
+                            itemSize * sample[i], itemSize * sample[i],
+                            itemSize * sample[i] / 2 * Configuration.Current.ItemsRoundness, itemSize * sample[i] / 2 * Configuration.Current.ItemsRoundness,
+                            GetSpinePaint(paint, sample[i]));
+                    }
                     break;
             }
         }
@@ -933,7 +1072,7 @@ public class Renderer
                     break;
             }
         }
-        if (!Configuration.Current.Filling)
+        if (!Configuration.Current.Filling && !_skipDrawing)
         {
             Canvas.DrawPath(path, paint);
         }
@@ -957,7 +1096,7 @@ public class Renderer
                 break;
         }
         path.Close();
-        if (Configuration.Current.Filling)
+        if (Configuration.Current.Filling && !_skipDrawing)
         {
             Canvas.DrawPath(path, paint);
         }
@@ -982,7 +1121,10 @@ public class Renderer
         var innerRadius = fullRadius * Configuration.Current.InnerRadius;
         var radius = fullRadius - innerRadius;
         Canvas.Save();
-        Canvas.Translate(x, y);
+        if (!_skipDrawing)
+        {
+            Canvas.Translate(x, y);
+        }
         paint.Style = SKPaintStyle.Stroke;
         paint.StrokeWidth = Configuration.Current.Filling ? fullRadius - innerRadius : Configuration.Current.LinesThickness;
         using var path = new SKPath();
@@ -1007,14 +1149,17 @@ public class Renderer
             width / 2 + (innerRadius + radius * sample[0]) * (float)Math.Cos(Math.PI / 2 + rotation),
             height / 2 + (innerRadius + radius * sample[0]) * (float)Math.Sin(Math.PI / 2 + rotation));
         path.Close();
-        if (Configuration.Current.Filling)
+        if (!_skipDrawing)
         {
-            Canvas.ClipPath(path, SKClipOperation.Intersect, true);
-            Canvas.DrawCircle(new SKPoint(width / 2, height / 2), innerRadius + (fullRadius - innerRadius) / 2, paint);
-        }
-        else
-        {
-            Canvas.DrawPath(path, paint);
+            if (Configuration.Current.Filling)
+            {
+                Canvas.ClipPath(path, SKClipOperation.Intersect, true);
+                Canvas.DrawCircle(new SKPoint(width / 2, height / 2), innerRadius + (fullRadius - innerRadius) / 2, paint);
+            }
+            else
+            {
+                Canvas.DrawPath(path, paint);
+            }
         }
         Canvas.Restore();
         return null;
@@ -1039,21 +1184,24 @@ public class Renderer
         var barWidth = (float)(2 * Math.PI * innerRadius / sample.Length);
         for (var i = 0; i < sample.Length; i++)
         {
-            Canvas.Save();
-            Canvas.Translate(x + width / 2, y + height / 2);
-            Canvas.RotateRadians(2 * (float)Math.PI * (i + 0.5f) / sample.Length + rotation);
-            for (var j = 0; j < Math.Floor(sample[i] * 10); j++)
+            if (!_skipDrawing)
             {
-                Canvas.DrawRoundRect(
-                    -barWidth * (1 - Configuration.Current.ItemsOffset * 2) / 2 + (Configuration.Current.Filling ? 0 : Configuration.Current.LinesThickness / 2),
-                    innerRadius + (fullRadius - innerRadius) / 10 * j + (fullRadius - innerRadius) / 10 * Configuration.Current.ItemsOffset + (Configuration.Current.Filling ? 0 : Configuration.Current.LinesThickness / 2),
-                    barWidth * (1 - Configuration.Current.ItemsOffset * 2) - (Configuration.Current.Filling ? 0 : Configuration.Current.LinesThickness),
-                    (fullRadius - innerRadius) / 10 * (1 - Configuration.Current.ItemsOffset * 2) - (Configuration.Current.Filling ? 0 : Configuration.Current.LinesThickness),
-                    (barWidth * (1 - Configuration.Current.ItemsOffset) - (Configuration.Current.Filling ? 0 : Configuration.Current.LinesThickness)) * Configuration.Current.ItemsRoundness,
-                    (fullRadius - innerRadius) / 10 * (1 - Configuration.Current.ItemsOffset) - (Configuration.Current.Filling ? 0 : Configuration.Current.LinesThickness) * Configuration.Current.ItemsRoundness,
-                    paint);
+                Canvas.Save();
+                Canvas.Translate(x + width / 2, y + height / 2);
+                Canvas.RotateRadians(2 * (float)Math.PI * (i + 0.5f) / sample.Length + rotation);
+                for (var j = 0; j < Math.Floor(sample[i] * 10); j++)
+                {
+                    Canvas.DrawRoundRect(
+                        -barWidth * (1 - Configuration.Current.ItemsOffset * 2) / 2 + (Configuration.Current.Filling ? 0 : Configuration.Current.LinesThickness / 2),
+                        innerRadius + (fullRadius - innerRadius) / 10 * j + (fullRadius - innerRadius) / 10 * Configuration.Current.ItemsOffset + (Configuration.Current.Filling ? 0 : Configuration.Current.LinesThickness / 2),
+                        barWidth * (1 - Configuration.Current.ItemsOffset * 2) - (Configuration.Current.Filling ? 0 : Configuration.Current.LinesThickness),
+                        (fullRadius - innerRadius) / 10 * (1 - Configuration.Current.ItemsOffset * 2) - (Configuration.Current.Filling ? 0 : Configuration.Current.LinesThickness),
+                        (barWidth * (1 - Configuration.Current.ItemsOffset) - (Configuration.Current.Filling ? 0 : Configuration.Current.LinesThickness)) * Configuration.Current.ItemsRoundness,
+                        (fullRadius - innerRadius) / 10 * (1 - Configuration.Current.ItemsOffset) - (Configuration.Current.Filling ? 0 : Configuration.Current.LinesThickness) * Configuration.Current.ItemsRoundness,
+                        paint);
+                }
+                Canvas.Restore();
             }
-            Canvas.Restore();
         }
         return null;
     }
@@ -1077,18 +1225,21 @@ public class Renderer
         var barWidth = (float)(2 * Math.PI * innerRadius / sample.Length);
         for (var i = 0; i < sample.Length; i++)
         {
-            Canvas.Save();
-            Canvas.Translate(x + width / 2, y + height / 2);
-            Canvas.RotateRadians(2 * (float)Math.PI * (i + 0.5f) / sample.Length + rotation);
-            Canvas.DrawRoundRect(
-                -barWidth * (1 - Configuration.Current.ItemsOffset * 2) / 2 + (Configuration.Current.Filling ? 0 : Configuration.Current.LinesThickness / 2),
-                innerRadius + (fullRadius - innerRadius) / 10 * 9 * sample[i] + (fullRadius - innerRadius) / 10 * Configuration.Current.ItemsOffset + (Configuration.Current.Filling ? 0 : Configuration.Current.LinesThickness / 2),
-                barWidth * (1 - Configuration.Current.ItemsOffset * 2) - (Configuration.Current.Filling ? 0 : Configuration.Current.LinesThickness),
-                (fullRadius - innerRadius) / 10 * (1 - Configuration.Current.ItemsOffset * 2) - (Configuration.Current.Filling ? 0 : Configuration.Current.LinesThickness),
-                (barWidth * (1 - Configuration.Current.ItemsOffset) - (Configuration.Current.Filling ? 0 : Configuration.Current.LinesThickness)) * Configuration.Current.ItemsRoundness,
-                (fullRadius - innerRadius) / 10 * (1 - Configuration.Current.ItemsOffset) - (Configuration.Current.Filling ? 0 : Configuration.Current.LinesThickness) * Configuration.Current.ItemsRoundness,
-                paint);
-            Canvas.Restore();
+            if (!_skipDrawing)
+            {
+                Canvas.Save();
+                Canvas.Translate(x + width / 2, y + height / 2);
+                Canvas.RotateRadians(2 * (float)Math.PI * (i + 0.5f) / sample.Length + rotation);
+                Canvas.DrawRoundRect(
+                    -barWidth * (1 - Configuration.Current.ItemsOffset * 2) / 2 + (Configuration.Current.Filling ? 0 : Configuration.Current.LinesThickness / 2),
+                    innerRadius + (fullRadius - innerRadius) / 10 * 9 * sample[i] + (fullRadius - innerRadius) / 10 * Configuration.Current.ItemsOffset + (Configuration.Current.Filling ? 0 : Configuration.Current.LinesThickness / 2),
+                    barWidth * (1 - Configuration.Current.ItemsOffset * 2) - (Configuration.Current.Filling ? 0 : Configuration.Current.LinesThickness),
+                    (fullRadius - innerRadius) / 10 * (1 - Configuration.Current.ItemsOffset * 2) - (Configuration.Current.Filling ? 0 : Configuration.Current.LinesThickness),
+                    (barWidth * (1 - Configuration.Current.ItemsOffset) - (Configuration.Current.Filling ? 0 : Configuration.Current.LinesThickness)) * Configuration.Current.ItemsRoundness,
+                    (fullRadius - innerRadius) / 10 * (1 - Configuration.Current.ItemsOffset) - (Configuration.Current.Filling ? 0 : Configuration.Current.LinesThickness) * Configuration.Current.ItemsRoundness,
+                    paint);
+                Canvas.Restore();
+            }
         }
         return null;
     }
@@ -1112,16 +1263,19 @@ public class Renderer
         var barWidth = (float)(2 * Math.PI * innerRadius / sample.Length);
         for (var i = 0; i < sample.Length; i++)
         {
-            Canvas.Save();
-            Canvas.Translate(x + width / 2, y + height / 2);
-            Canvas.RotateRadians(2 * (float)Math.PI * (i + 0.5f) / sample.Length + rotation);
-            Canvas.DrawRect(
-                -barWidth * (1 - Configuration.Current.ItemsOffset * 2) / 2 + (Configuration.Current.Filling ? 0 : Configuration.Current.LinesThickness / 2),
-                innerRadius + (Configuration.Current.Filling ? 0 : 0 + Configuration.Current.LinesThickness / 2),
-                barWidth * (1 - Configuration.Current.ItemsOffset * 2) - (Configuration.Current.Filling ? 0 : Configuration.Current.LinesThickness),
-                (fullRadius - innerRadius) * sample[i] - (Configuration.Current.Filling ? 0 : Configuration.Current.LinesThickness) + 1,
-                paint);
-            Canvas.Restore();
+            if (!_skipDrawing)
+            {
+                Canvas.Save();
+                Canvas.Translate(x + width / 2, y + height / 2);
+                Canvas.RotateRadians(2 * (float)Math.PI * (i + 0.5f) / sample.Length + rotation);
+                Canvas.DrawRect(
+                    -barWidth * (1 - Configuration.Current.ItemsOffset * 2) / 2 + (Configuration.Current.Filling ? 0 : Configuration.Current.LinesThickness / 2),
+                    innerRadius + (Configuration.Current.Filling ? 0 : 0 + Configuration.Current.LinesThickness / 2),
+                    barWidth * (1 - Configuration.Current.ItemsOffset * 2) - (Configuration.Current.Filling ? 0 : Configuration.Current.LinesThickness),
+                    (fullRadius - innerRadius) * sample[i] - (Configuration.Current.Filling ? 0 : Configuration.Current.LinesThickness) + 1,
+                    paint);
+                Canvas.Restore();
+            }
         }
         return null;
     }
@@ -1148,26 +1302,32 @@ public class Renderer
             var itemSize = barWidth * (1 - Configuration.Current.ItemsOffset * 2) - (Configuration.Current.Filling ? 0 : Configuration.Current.LinesThickness);
             if (Configuration.Current.Hearts)
             {
-                Canvas.Save();
-                using var path = new SKPath();
-                CreateHeart(path, itemSize);
-                Canvas.Translate(x + width / 2 + innerRadius * (float)Math.Cos(rotation + Math.PI / 2 + Math.PI * 2 * i / sample.Length), y + height / 2 + innerRadius * (float)Math.Sin(Math.PI / 2 + Math.PI * 2 * i / sample.Length));
-                Canvas.Scale(sample[i]);
-                Canvas.DrawPath(path, GetSpinePaint(paint, sample[i]));
-                Canvas.Restore();
+                if (!_skipDrawing)
+                {
+                    Canvas.Save();
+                    using var path = new SKPath();
+                    CreateHeart(path, itemSize);
+                    Canvas.Translate(x + width / 2 + innerRadius * (float)Math.Cos(rotation + Math.PI / 2 + Math.PI * 2 * i / sample.Length), y + height / 2 + innerRadius * (float)Math.Sin(Math.PI / 2 + Math.PI * 2 * i / sample.Length));
+                    Canvas.Scale(sample[i]);
+                    Canvas.DrawPath(path, GetSpinePaint(paint, sample[i]));
+                    Canvas.Restore();
+                }
                 continue;
             }
-            Canvas.Save();
-            Canvas.Translate(x + width / 2, y + height / 2);
-            Canvas.RotateRadians(2 * (float)Math.PI * (i + 0.5f) / sample.Length + rotation);
-            Canvas.DrawRoundRect(
-                -barWidth * (1 - Configuration.Current.ItemsOffset * 2) / 2 * sample[i] + (Configuration.Current.Filling ? 0 : Configuration.Current.LinesThickness / 2),
-                innerRadius - itemSize * sample[i] / 2,
-                itemSize * sample[i], itemSize * sample[i],
-                itemSize * sample[i] / 2 * Configuration.Current.ItemsRoundness,
-                itemSize * sample[i] / 2 * Configuration.Current.ItemsRoundness,
-                GetSpinePaint(paint, sample[i]));
-            Canvas.Restore();
+            if (!_skipDrawing)
+            {
+                Canvas.Save();
+                Canvas.Translate(x + width / 2, y + height / 2);
+                Canvas.RotateRadians(2 * (float)Math.PI * (i + 0.5f) / sample.Length + rotation);
+                Canvas.DrawRoundRect(
+                    -barWidth * (1 - Configuration.Current.ItemsOffset * 2) / 2 * sample[i] + (Configuration.Current.Filling ? 0 : Configuration.Current.LinesThickness / 2),
+                    innerRadius - itemSize * sample[i] / 2,
+                    itemSize * sample[i], itemSize * sample[i],
+                    itemSize * sample[i] / 2 * Configuration.Current.ItemsRoundness,
+                    itemSize * sample[i] / 2 * Configuration.Current.ItemsRoundness,
+                    GetSpinePaint(paint, sample[i]));
+                Canvas.Restore();
+            }
         }
         return null;
     }

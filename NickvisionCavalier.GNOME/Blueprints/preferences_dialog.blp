@@ -326,9 +326,9 @@ Adw.PreferencesWindow _root {
           width-request: 150;
           draw-value: false;
           adjustment: Gtk.Adjustment {
-            lower: 10;
+            lower: 1;
             upper: 250;
-            step-increment: 10;
+            step-increment: 1;
           };
         }
       }
@@ -380,6 +380,182 @@ Adw.PreferencesWindow _root {
         title: _("Reverse order");
         subtitle: _("Whether to reverse order of bars for each channel.");
       }
+
+      Adw.ComboRow _inputMethodRow {
+        title: _("Input method");
+        subtitle: _("Audio input backend.");
+        model: Gtk.StringList {
+          strings ["pulse", "pipewire", "alsa", "fifo", "sndio", "portaudio"]
+        };
+      }
+
+      Adw.EntryRow _inputSourceRow {
+        title: _("Input source");
+        show-apply-button: true;
+      }
+
+      Adw.SwitchRow _wavesRow {
+        title: _("Waves");
+        subtitle: _("Whether to enable wave effect across bars.");
+      }
+
+      Adw.ActionRow {
+        title: _("Gravity");
+        subtitle: _("How fast bars fall (0-200). 100 is normal.");
+
+        [suffix]
+        Gtk.Scale _gravityScale {
+          width-request: 180;
+          draw-value: true;
+          value-pos: left;
+          digits: 0;
+          adjustment: Gtk.Adjustment {
+            lower: 0;
+            upper: 200;
+            step-increment: 1;
+          };
+        }
+      }
+    }
+
+    Adw.PreferencesGroup {
+      title: _("Equalizer");
+
+      Adw.ActionRow {
+        title: _("Band 1");
+
+        [suffix]
+        Gtk.Scale _eqBand1Scale {
+          width-request: 180;
+          draw-value: true;
+          value-pos: left;
+          digits: 2;
+          adjustment: Gtk.Adjustment {
+            lower: 0;
+            upper: 2;
+            step-increment: 0.05;
+          };
+        }
+      }
+
+      Adw.ActionRow {
+        title: _("Band 2");
+
+        [suffix]
+        Gtk.Scale _eqBand2Scale {
+          width-request: 180;
+          draw-value: true;
+          value-pos: left;
+          digits: 2;
+          adjustment: Gtk.Adjustment {
+            lower: 0;
+            upper: 2;
+            step-increment: 0.05;
+          };
+        }
+      }
+
+      Adw.ActionRow {
+        title: _("Band 3");
+
+        [suffix]
+        Gtk.Scale _eqBand3Scale {
+          width-request: 180;
+          draw-value: true;
+          value-pos: left;
+          digits: 2;
+          adjustment: Gtk.Adjustment {
+            lower: 0;
+            upper: 2;
+            step-increment: 0.05;
+          };
+        }
+      }
+
+      Adw.ActionRow {
+        title: _("Band 4");
+
+        [suffix]
+        Gtk.Scale _eqBand4Scale {
+          width-request: 180;
+          draw-value: true;
+          value-pos: left;
+          digits: 2;
+          adjustment: Gtk.Adjustment {
+            lower: 0;
+            upper: 2;
+            step-increment: 0.05;
+          };
+        }
+      }
+
+      Adw.ActionRow {
+        title: _("Band 5");
+
+        [suffix]
+        Gtk.Scale _eqBand5Scale {
+          width-request: 180;
+          draw-value: true;
+          value-pos: left;
+          digits: 2;
+          adjustment: Gtk.Adjustment {
+            lower: 0;
+            upper: 2;
+            step-increment: 0.05;
+          };
+        }
+      }
+
+      Adw.ActionRow {
+        title: _("Band 6");
+
+        [suffix]
+        Gtk.Scale _eqBand6Scale {
+          width-request: 180;
+          draw-value: true;
+          value-pos: left;
+          digits: 2;
+          adjustment: Gtk.Adjustment {
+            lower: 0;
+            upper: 2;
+            step-increment: 0.05;
+          };
+        }
+      }
+
+      Adw.ActionRow {
+        title: _("Band 7");
+
+        [suffix]
+        Gtk.Scale _eqBand7Scale {
+          width-request: 180;
+          draw-value: true;
+          value-pos: left;
+          digits: 2;
+          adjustment: Gtk.Adjustment {
+            lower: 0;
+            upper: 2;
+            step-increment: 0.05;
+          };
+        }
+      }
+
+      Adw.ActionRow {
+        title: _("Band 8");
+
+        [suffix]
+        Gtk.Scale _eqBand8Scale {
+          width-request: 180;
+          draw-value: true;
+          value-pos: left;
+          digits: 2;
+          adjustment: Gtk.Adjustment {
+            lower: 0;
+            upper: 2;
+            step-increment: 0.05;
+          };
+        }
+      }
     }
   }
 
@@ -387,7 +563,7 @@ Adw.PreferencesWindow _root {
     title: _("Colors");
     icon-name: "applications-graphics-symbolic";
 
-    Gtk.Box {
+    Adw.PreferencesGroup {
       Gtk.Box {
         orientation: vertical;
 
@@ -513,8 +689,9 @@ Adw.PreferencesWindow _root {
     title: _("Images");
     icon-name: "image-x-generic-symbolic";
 
-    Gtk.Box {
-      orientation: vertical;
+    Adw.PreferencesGroup {
+      Gtk.Box {
+        orientation: vertical;
       margin-top: 12;
       margin-start: 12;
       margin-end: 12;
@@ -644,6 +821,7 @@ Adw.PreferencesWindow _root {
             styles ["card"]
           };
         }
+      }
       }
     }
   }

@@ -67,22 +67,34 @@ public class CAVA : IDisposable
     /// </summary>
     private void UpdateConfig()
     {
+        var cfg = Configuration.Current;
         var config = @$"[general]
-            framerate = {Configuration.Current.Framerate}
-            bars = {Configuration.Current.BarPairs * 2}
-            autosens = {(Configuration.Current.Autosens ? "1" : "0")}
-            sensitivity = {Math.Pow(Configuration.Current.Sensitivity, 2)}
+            framerate = {cfg.Framerate}
+            bars = {cfg.BarPairs * 2}
+            autosens = {(cfg.Autosens ? "1" : "0")}
+            sensitivity = {Math.Pow(cfg.Sensitivity, 2)}
             [input]
-            method = {Environment.GetEnvironmentVariable("CAVALIER_INPUT_METHOD") ?? "pulse"}
-            source = {Environment.GetEnvironmentVariable("CAVALIER_INPUT_SOURCE") ?? "auto"}
+            method = {cfg.InputMethod}
+            source = {cfg.InputSource}
             [output]
             method = raw
             raw_target = /dev/stdout
             bit_format = 16bit
-            channels = {(Configuration.Current.Stereo ? "stereo" : "mono")}
+            channels = {(cfg.Stereo ? "stereo" : "mono")}
             [smoothing]
-            monstercat = {(Configuration.Current.Monstercat ? "1" : "0")}
-            noise_reduction = {(int)(Configuration.Current.NoiseReduction * 100)}";
+            monstercat = {(cfg.Monstercat ? "1" : "0")}
+            noise_reduction = {(int)(cfg.NoiseReduction * 100)}
+            waves = {(cfg.Waves ? "1" : "0")}
+            gravity = {cfg.Gravity}
+            [eq]
+            1 = {cfg.EqBand1:F2}
+            2 = {cfg.EqBand2:F2}
+            3 = {cfg.EqBand3:F2}
+            4 = {cfg.EqBand4:F2}
+            5 = {cfg.EqBand5:F2}
+            6 = {cfg.EqBand6:F2}
+            7 = {cfg.EqBand7:F2}
+            8 = {cfg.EqBand8:F2}";
         File.WriteAllText(_configPath, config);
     }
 

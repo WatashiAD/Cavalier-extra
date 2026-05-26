@@ -154,6 +154,54 @@ public class Configuration : ConfigurationBase
     /// </summary>
     public float FgImageAlpha { get; set; }
     /// <summary>
+    /// CAVA audio input method
+    /// </summary>
+    public string InputMethod { get; set; }
+    /// <summary>
+    /// CAVA audio input source
+    /// </summary>
+    public string InputSource { get; set; }
+    /// <summary>
+    /// CAVA gravity (0-200, how fast bars fall)
+    /// </summary>
+    public uint Gravity { get; set; }
+    /// <summary>
+    /// Whether to enable CAVA wave effect
+    /// </summary>
+    public bool Waves { get; set; }
+    /// <summary>
+    /// CAVA EQ band 1 (lowest frequency)
+    /// </summary>
+    public float EqBand1 { get; set; }
+    /// <summary>
+    /// CAVA EQ band 2
+    /// </summary>
+    public float EqBand2 { get; set; }
+    /// <summary>
+    /// CAVA EQ band 3
+    /// </summary>
+    public float EqBand3 { get; set; }
+    /// <summary>
+    /// CAVA EQ band 4
+    /// </summary>
+    public float EqBand4 { get; set; }
+    /// <summary>
+    /// CAVA EQ band 5
+    /// </summary>
+    public float EqBand5 { get; set; }
+    /// <summary>
+    /// CAVA EQ band 6
+    /// </summary>
+    public float EqBand6 { get; set; }
+    /// <summary>
+    /// CAVA EQ band 7
+    /// </summary>
+    public float EqBand7 { get; set; }
+    /// <summary>
+    /// CAVA EQ band 8 (highest frequency)
+    /// </summary>
+    public float EqBand8 { get; set; }
+    /// <summary>
     /// Whether to replace Spine mode with Hearts mode (easter egg)
     /// </summary>
     /// <remarks>Suggested by my beloved Xenia &lt;3</remarks>
@@ -198,6 +246,18 @@ public class Configuration : ConfigurationBase
         FgImageIndex = -1;
         FgImageScale = 1f;
         FgImageAlpha = 1f;
+        InputMethod = "pulse";
+        InputSource = "auto";
+        Gravity = 120;
+        Waves = false;
+        EqBand1 = 1.0f;
+        EqBand2 = 1.0f;
+        EqBand3 = 1.0f;
+        EqBand4 = 1.0f;
+        EqBand5 = 1.0f;
+        EqBand6 = 1.0f;
+        EqBand7 = 1.0f;
+        EqBand8 = 1.0f;
         Hearts = false;
     }
 

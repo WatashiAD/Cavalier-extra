@@ -410,6 +410,126 @@ public class PreferencesViewController
     }
 
     /// <summary>
+    /// CAVA audio input method
+    /// </summary>
+    public string InputMethod
+    {
+        get => Configuration.Current.InputMethod;
+
+        set => Configuration.Current.InputMethod = value;
+    }
+
+    /// <summary>
+    /// CAVA audio input source
+    /// </summary>
+    public string InputSource
+    {
+        get => Configuration.Current.InputSource;
+
+        set => Configuration.Current.InputSource = value;
+    }
+
+    /// <summary>
+    /// CAVA gravity (0-200)
+    /// </summary>
+    public uint Gravity
+    {
+        get => Configuration.Current.Gravity;
+
+        set => Configuration.Current.Gravity = value;
+    }
+
+    /// <summary>
+    /// Whether to enable CAVA wave effect
+    /// </summary>
+    public bool Waves
+    {
+        get => Configuration.Current.Waves;
+
+        set => Configuration.Current.Waves = value;
+    }
+
+    /// <summary>
+    /// CAVA EQ band 1
+    /// </summary>
+    public float EqBand1
+    {
+        get => Configuration.Current.EqBand1;
+
+        set => Configuration.Current.EqBand1 = value;
+    }
+
+    /// <summary>
+    /// CAVA EQ band 2
+    /// </summary>
+    public float EqBand2
+    {
+        get => Configuration.Current.EqBand2;
+
+        set => Configuration.Current.EqBand2 = value;
+    }
+
+    /// <summary>
+    /// CAVA EQ band 3
+    /// </summary>
+    public float EqBand3
+    {
+        get => Configuration.Current.EqBand3;
+
+        set => Configuration.Current.EqBand3 = value;
+    }
+
+    /// <summary>
+    /// CAVA EQ band 4
+    /// </summary>
+    public float EqBand4
+    {
+        get => Configuration.Current.EqBand4;
+
+        set => Configuration.Current.EqBand4 = value;
+    }
+
+    /// <summary>
+    /// CAVA EQ band 5
+    /// </summary>
+    public float EqBand5
+    {
+        get => Configuration.Current.EqBand5;
+
+        set => Configuration.Current.EqBand5 = value;
+    }
+
+    /// <summary>
+    /// CAVA EQ band 6
+    /// </summary>
+    public float EqBand6
+    {
+        get => Configuration.Current.EqBand6;
+
+        set => Configuration.Current.EqBand6 = value;
+    }
+
+    /// <summary>
+    /// CAVA EQ band 7
+    /// </summary>
+    public float EqBand7
+    {
+        get => Configuration.Current.EqBand7;
+
+        set => Configuration.Current.EqBand7 = value;
+    }
+
+    /// <summary>
+    /// CAVA EQ band 8
+    /// </summary>
+    public float EqBand8
+    {
+        get => Configuration.Current.EqBand8;
+
+        set => Configuration.Current.EqBand8 = value;
+    }
+
+    /// <summary>
     /// Whether to replace Spine mode with Hearts mode (easter egg)
     /// </summary>
     /// <remarks>Suggested by my beloved Xenia &lt;3</remarks>
