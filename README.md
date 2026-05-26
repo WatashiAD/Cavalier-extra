@@ -6,7 +6,7 @@
 
 * 11 drawing modes!
 * Set any single color, a gradient or an image for background and foreground.
-* Configure smoothing, noise reduction and a few other CAVA settings.
+* Full CAVA configuration: input method & source, framerate, bars, sensitivity, smoothing, noise reduction, gravity, waves, 8-band equalizer.
 
 # Installation
 
@@ -37,7 +37,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for details on how can you help the proje
 </details>
 
 # Dependencies
-- [.NET 8](https://dotnet.microsoft.com/en-us/)
+- [.NET 10](https://dotnet.microsoft.com/en-us/)
 - [CAVA](https://github.com/karlstav/cava/) >= 0.9.1
 
 # Code of Conduct
