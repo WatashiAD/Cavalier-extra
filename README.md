@@ -1,29 +1,43 @@
-![](NickvisionCavalier.Shared/Resources/banner.png)
+# Cavalier-extra
 
- [![Translation status](https://hosted.weblate.org/widgets/nickvision-cavalier/-/app/svg-badge.svg)](https://hosted.weblate.org/engage/nickvision-cavalier/) ✨Powered by [Weblate](https://weblate.org/en/)✨
+This is a fork of [NickvisionApps/Cavalier](https://github.com/NickvisionApps/Cavalier) by **WatashiAD** with additional customization options.
 
-# Features
+## Changes from upstream
+
+* **Foreground image behind visualization** — foreground image renders behind the bars/wave (clipped to the drawing area) instead of on top, for all drawing modes.
+* **Full CAVA input control** — choose audio input method (pulse/pipewire/alsa/fifo/sndio/portaudio) and source directly from the UI instead of environment variables.
+* **Waves toggle** — enable/disable the CAVA wave effect across bars.
+* **Gravity control** — slider to set how fast bars fall (0–200).
+* **8-band equalizer** — adjust frequency response per band (0–2x).
+* **Fine-grained sensitivity** — sensitivity slider now starts at 1 with step 1 (was 10 step 10).
+* **Fixed Colors & Images pages** — wrapped content in `Adw.PreferencesGroup` to comply with Libadwaita child requirements.
+* **.NET 10** — updated target framework from .NET 8 to .NET 10.
+
+## Original features
 
 * 11 drawing modes!
 * Set any single color, a gradient or an image for background and foreground.
-* Full CAVA configuration: input method & source, framerate, bars, sensitivity, smoothing, noise reduction, gravity, waves, 8-band equalizer.
+* Full CAVA configuration: framerate, bars, sensitivity, smoothing, noise reduction, and more.
 
-# Installation
+## Installation
 
-<a href='https://flathub.org/apps/org.nickvision.cavalier'><img width='140' alt='Download on Flathub' src='https://flathub.org/assets/badges/flathub-badge-en.png'/></a>
+Build from source with .NET 10:
 
-<a href="https://snapcraft.io/cavalier"><img width='140' alt="Get it from the Snap Store" src="https://snapcraft.io/static/images/badges/en/snap-store-black.svg"/></a>
+```
+dotnet build
+dotnet run --project NickvisionCavalier.GNOME
+```
 
-<a href="https://aur.archlinux.org/packages/cavalier"><img width='140' alt="Download from AUR" src="https://aur.archlinux.org/static/css/archnavbar/aurlogo.png"/></a>
+### Dependencies
 
-# Chat
-<a href='https://matrix.to/#/#nickvision:matrix.org'><img width='140' alt='Join our room' src='https://user-images.githubusercontent.com/17648453/196094077-c896527d-af6d-4b43-a5d8-e34a00ffd8f6.png'/></a>
+- [.NET 10](https://dotnet.microsoft.com/en-us/)
+- [CAVA](https://github.com/karlstav/cava/) >= 0.9.1
 
-# Contributing
+## Upstream
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for details on how can you help the project and how to provide information so we can help you in case of troubles with the app.
+Original project: [NickvisionApps/Cavalier](https://github.com/NickvisionApps/Cavalier)
 
-# Screenshots
+## Screenshots
 
 <details>
  <summary>GNOME</summary>
@@ -35,11 +49,3 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for details on how can you help the proje
  ![GNOMEImages](NickvisionCavalier.GNOME/Screenshots/Images.png)
  ![GNOMECircle](NickvisionCavalier.GNOME/Screenshots/Circle.png)
 </details>
-
-# Dependencies
-- [.NET 10](https://dotnet.microsoft.com/en-us/)
-- [CAVA](https://github.com/karlstav/cava/) >= 0.9.1
-
-# Code of Conduct
-
-This project follows the [GNOME Code of Conduct](https://wiki.gnome.org/Foundation/CodeOfConduct).
